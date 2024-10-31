@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var tubeSchema = mongoose.Schema({
+var tubeSchema = new mongoose.Schema({
     title:{
         type:String,
         required:true
@@ -20,7 +20,7 @@ required:true
     terms:{
         type:[
             {
-                fileName:{type:String,required:true},
+                filePath:{type:String,required:true},
                 keywords:{type:[String],required:true},
             }
         ],
@@ -29,7 +29,7 @@ required:true
     conditions:{
         type:[
             {
-                fileName:{type:String,required:true},
+                filePath:{type:String,required:true},
                 commentStart:{type:String,required:true},
                 commentEnd:{type:String,required:true},
                 function:{type:String,required:true}
@@ -41,10 +41,16 @@ required:true
         type:String,
         required:true
     },
-    // ownedBy:{
-    //     type:mongoose.Schema.Types.ObjectId,
-    //     required:true
-    // }
+    earned_amount:{
+        type:Number
+    },
+    issued_certificate:{
+        type:Number
+    },
+    ownedBy:{
+        type:String,
+        required:true
+    }
 })
 
 module.exports = mongoose.model("TubeSchema",tubeSchema)

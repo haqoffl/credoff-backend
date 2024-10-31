@@ -1,5 +1,5 @@
 var mongoose = require('mongoose')
-var tubeAnalyticsSchema = mongoose.Schema({
+var tubeAnalyticsSchema = new mongoose.Schema({
     tubeId:{
         type:mongoose.Schema.Types.ObjectId,
         required:true

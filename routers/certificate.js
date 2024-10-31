@@ -2,7 +2,8 @@ var express = require('express');
 var axios = require('axios');
 const tubesSchema = require('../schema/tubesSchema');
 var router = express.Router()
-
+var {OpenAI} =require("openai")
+var openai = new OpenAI()
 router.post('/patternMatching',async(req,res)=>{
 let {url,id} = req.body
 
@@ -51,8 +52,62 @@ res.status(200).send(resp)
 
 })
 
-router.get('/quiz/model/choose',async(req,res)=>{
+router.post('/projectValidation',async(req,res)=>{
+    try{
+        let {url,id} = req.body
+        let tube = await tubesSchema.findOne({_id:id})
+        terms = tube.terms
+        let promises = tube.conditions.map(async(val)=>{
+            let raw_github_domain = url.replace("github.com","raw.githubusercontent.com")
+        let github_raw_url = raw_github_domain+"/refs/heads/main/"+encodeURIComponent(val.fileName)
+        console.log(github_raw_url)
+        let response = await axios.get(github_raw_url)
+        let code = `${response.data}`
+        let start_comment = val.commentStart
+        let end_comment = val.commentEnd
+        let start = code.indexOf(start_comment);
+        let end = code.indexOf(end_comment);
+        let extractedCode =code.slice(start+start_comment.length,end).trim()
     
+            return {extractedCode, function:val.function}
+    
+        })
+        
+        let code_promise = await Promise.all(promises)
+        let ai_promise = code_promise.map(async(val)=>{
+        let completion = await openai.chat.completions.create({
+            model:"gpt-4o-mini-2024-07-18",
+            messages:[
+                {role:"system",content:"you are expert at all programming language."+val.function+" and write very short comment about it"},
+                {role:"user",content:val.extractedCode.toString()}
+            ],
+            response_format:{
+                type:"json_schema",
+                json_schema:{
+                    name:"response_schema",
+                    schema:{
+                        type:"object",
+                        properties:{
+                        isCorrect:{type:"boolean"},
+                        comment:{type:"string"}
+                        },
+                        additionalProperties:false,
+                        required:["isCorrect","comment"]
+                    }
+                }
+            }
+        })
+
+        return completion.choices[0].message.content
+        })
+        let result = await Promise.all(ai_promise)
+        res.status(200).send(result)
+    }catch(err){
+        console.log(err)
+        res.status(400).send(err)
+    }
 })
+
+
 
 module.exports = router
