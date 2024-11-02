@@ -42,10 +42,12 @@ required:true
         required:true
     },
     earned_amount:{
-        type:Number
+        type:Number,
+        default:0
     },
     issued_certificate:{
-        type:Number
+        type:Number,
+        default:0
     },
     ownedBy:{
         type:String,

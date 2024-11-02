@@ -222,4 +222,28 @@ router.post('/updateYoutuber',async(req,res)=>{
         }
     }
 })
+
+router.get('/githubRepos/:accessToken',async(req,res)=>{
+    console.log("hello")
+    let {accessToken} = req.params
+    axios.get('https://api.github.com/user', {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    }).then(resp=>{
+        axios.get(`https://api.github.com/users/${resp.data.login}/repos`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }                                   
+        }).then(resp_2=>{
+            res.status(200).send(resp_2.data)
+        }).catch(err=>{
+            console.log(err)
+            res.status(400).send({message:"internal server issue,try again later",err})
+        })
+    }).catch(err=>{
+        console.log(err)
+        res.status(400).send({message:"internal server issue,try again later",err})
+    })
+})
 module.exports = router

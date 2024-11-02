@@ -5,7 +5,7 @@ var {OpenAI} = require('openai');
 var multer = require('multer')
 const quizSchema = require('../schema/quizSchema');
 const storage = require('../storageEngine');
-var openai = new OpenAI()
+var openai = new OpenAI({apiKey:process.env.OPENAI_API_KEY})
 var upload = multer({storage})
 
 router.get('/',(req,res)=>{
@@ -117,7 +117,7 @@ router.post('/ai-quiz-generate',async(req,res)=>{
         const sq_completion = await openai.chat.completions.create({
             model:"gpt-4o-mini-2024-07-18",
             messages:[
-                {role:"system",content:"you are expert at all programming language. create 30 to 40 different quizzes from easy to hard under the given tags with 4 options and correct answer,then  Randomly assign the correct answer to one of the four options, ensuring that the index of the correct answer varies across all quizzes and nearest quizzes too (i.e., it should not consistently be the same index for every question and difficult to predict) ."},
+                {role:"system",content:"you are expert at all programming language. create 30 to 40 different quizzes from easy to hard under the given tags with question, 4 options and correct answer"},
                 {role:"user",content:"tags:" +tags.toString()+" in "+language}
             ],
             response_format:{
@@ -160,7 +160,7 @@ router.post('/ai-quiz-generate',async(req,res)=>{
         const ogq_completion = await openai.chat.completions.create({
             model:"gpt-4o-mini-2024-07-18",
             messages:[
-                {role:"system",content:"you are expert at all programming language. create 25 simple coding quiz to predict the output of the code with question,code,4 options,answer then  Randomly assign the correct answer to one of the four options, ensuring that the index of the correct answer varies across all quizzes and nearest quiz too (i.e., it should not consistently be the same index for every question and very difficult to predict) and programming language extension like py,cpp,js etc.. for given tags"},
+                {role:"system",content:"you are expert at all programming language. create 25 simple coding quiz to predict the output of the code with question,code,4 options,correct answer and programming language extension like py,cpp,js etc.. for given tags"},
                 {role:"user",content:"tags:" +tags.toString()+" in "+language}
             ],
             response_format:{

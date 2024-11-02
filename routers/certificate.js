@@ -3,7 +3,7 @@ var axios = require('axios');
 const tubesSchema = require('../schema/tubesSchema');
 var router = express.Router()
 var {OpenAI} =require("openai")
-var openai = new OpenAI()
+var openai = new OpenAI({apiKey:process.env.OPENAI_API_KEY})
 router.post('/patternMatching',async(req,res)=>{
 let {url,id} = req.body
 

@@ -11,9 +11,9 @@ var tube = require('./routers/tube')
 var certificate = require('./routers/certificate')
 var users = require('./routers/users')
 //use
+app.use(cors())
 app.use(express.json());
 app.use(morgan('dev'))
-app.use(cors())
 app.use('/users',users)
 app.use("/tube",tube)
 app.use('/certificate',certificate)
