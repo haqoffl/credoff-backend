@@ -2,20 +2,23 @@ var express = require('express');
 var axios = require('axios');
 const tubesSchema = require('../schema/tubesSchema');
 var router = express.Router()
-var {OpenAI} =require("openai")
+var {OpenAI} =require("openai");
+const certificationSchema = require('../schema/certificationSchema');
 var openai = new OpenAI({apiKey:process.env.OPENAI_API_KEY})
 router.post('/patternMatching',async(req,res)=>{
-let {url,id} = req.body
+try{
+    let {url,id} = req.body
 
 let tube = await tubesSchema.findOne({_id:id})
 terms = tube.terms
-
+console.log("terms",terms)
 let promises = terms.map(async(element,index) => {
     let scored_points = 0
     let total_points = element.keywords.length
+    console.log(element.keywords)
     //getting code from raw github
     let raw_github_domain = url.replace("github.com","raw.githubusercontent.com")
-    let github_raw_url = raw_github_domain+"/refs/heads/main/"+encodeURIComponent(element.fileName)
+    let github_raw_url = raw_github_domain+"/refs/heads/main"+encodeURIComponent(element.filePath)
     let response = await axios.get(github_raw_url)
     let code = `${response.data}`
     //splitting lines of the code
@@ -49,6 +52,9 @@ let promises = terms.map(async(element,index) => {
 
 let resp = await Promise.all(promises);
 res.status(200).send(resp)
+}catch(err){
+    res.status(400).send({message:"internal issue",err})
+}
 
 })
 
@@ -59,7 +65,7 @@ router.post('/projectValidation',async(req,res)=>{
         terms = tube.terms
         let promises = tube.conditions.map(async(val)=>{
             let raw_github_domain = url.replace("github.com","raw.githubusercontent.com")
-        let github_raw_url = raw_github_domain+"/refs/heads/main/"+encodeURIComponent(val.fileName)
+        let github_raw_url = raw_github_domain+"/refs/heads/main/"+encodeURIComponent(val.filePath)
         console.log(github_raw_url)
         let response = await axios.get(github_raw_url)
         let code = `${response.data}`
@@ -78,7 +84,7 @@ router.post('/projectValidation',async(req,res)=>{
         let completion = await openai.chat.completions.create({
             model:"gpt-4o-mini-2024-07-18",
             messages:[
-                {role:"system",content:"you are expert at all programming language."+val.function+" and write very short comment about it"},
+                {role:"system",content:"you are expert at all programming language."+val.function+" and write very comment,suggestion and points out of 10 about it"},
                 {role:"user",content:val.extractedCode.toString()}
             ],
             response_format:{
@@ -89,10 +95,11 @@ router.post('/projectValidation',async(req,res)=>{
                         type:"object",
                         properties:{
                         isCorrect:{type:"boolean"},
-                        comment:{type:"string"}
+                        comment:{type:"string"},
+                        points:{type:"integer"}
                         },
                         additionalProperties:false,
-                        required:["isCorrect","comment"]
+                        required:["isCorrect","comment","points"]
                     }
                 }
             }
@@ -110,4 +117,50 @@ router.post('/projectValidation',async(req,res)=>{
 
 
 
+router.post('/MarkEvaluationComplete',async(req,res)=>{
+let {tubeId,tubeName,thumbnail,learnerId,learnerName,language,youtuberName,youtuberChannelName,quizScore,aiScore} = req.body
+
+try{
+    let isAlreadyMark = await certificationSchema.findOne({tubeId,learnerId})
+    if(!isAlreadyMark){
+        let certScehma = new certificationSchema({
+            tubeId,
+            tubeName,
+            thumbnail,
+            learnerId,
+            learnerName,
+            language,
+            youtuberName,
+            youtuberChannelName,
+            scoredAtQuiz:quizScore,
+            scoredOnAiEvaluationAtProject:aiScore
+        })
+        let dt = await certScehma.save()
+        res.status(200).send(dt)
+    }else{
+        res.status(201).send({message:"you can't mark the same certificate again!"})
+    }
+
+}catch(err){
+    res.status(400).send({message:"internal issue",err})
+}
+
+})
+
+router.get('/getAllCertificates/:learnerId',async(req,res)=>{
+try{
+    let {learnerId} = req.params
+    if(!learnerId){
+        res.status(400).send({message:"insufficient body data"})
+    }else{
+        let dt = await certificationSchema.find({learnerId})
+        res.status(200).send(dt)
+    }
+}catch(err){
+    console.log(err)
+    res.status(400).send({message:"internal issue",err})
+}
+})
+ 
+ 
 module.exports = router

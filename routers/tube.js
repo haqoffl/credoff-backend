@@ -4,6 +4,7 @@ var router = express.Router()
 var {OpenAI} = require('openai');
 var multer = require('multer')
 const quizSchema = require('../schema/quizSchema');
+var youtuberSchema = require('../schema/youtuberSchema')
 const storage = require('../storageEngine');
 var openai = new OpenAI({apiKey:process.env.OPENAI_API_KEY})
 var upload = multer({storage})
@@ -85,8 +86,19 @@ router.get('/getTubes',async(req,res)=>{
 
 
 router.get('/getTube/:id',async(req,res)=>{
+   try{
     let data =  await tubesSchema.findOne({_id:req.params.id})
-    res.status(200).send(data)
+    let youtuber = await youtuberSchema.findOne({_id:data.ownedBy})
+
+    res.status(200).send({data,info:{
+        fullName:youtuber.fullName,language:youtuber.language,channelName:youtuber.youtubeChannelName
+    }})   
+   }catch(err){
+    res.status(400).send({
+        message:"internal server issue",
+        err
+    })
+   }
 })
 
 router.get('/getTubes/:ownerId',async(req,res)=>{

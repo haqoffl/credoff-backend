@@ -10,6 +10,7 @@ var Grid = require('gridfs-stream')
 var tube = require('./routers/tube')
 var certificate = require('./routers/certificate')
 var users = require('./routers/users')
+var payments = require('./routers/payments')
 //use
 app.use(cors())
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use(morgan('dev'))
 app.use('/users',users)
 app.use("/tube",tube)
 app.use('/certificate',certificate)
+app.use('/payments',payments)
 // endpoint
 app.get('/',(req,res)=>{
     res.status(200).send({message:"server is live"})
