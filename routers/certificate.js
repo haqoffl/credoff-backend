@@ -118,7 +118,7 @@ router.post('/projectValidation',async(req,res)=>{
 
 
 router.post('/MarkEvaluationComplete',async(req,res)=>{
-let {tubeId,tubeName,thumbnail,learnerId,learnerName,language,youtuberName,youtuberChannelName,quizScore,aiScore} = req.body
+let {tubeId,tubeName,thumbnail,learnerId,learnerName,language,youtuberName,youtuberChannelName,quizScore,aiScore,git_fullName,git_name,git_url, git_description,git_language,git_stars,git_forks,git_pushed_at,git_visibility} = req.body
 
 try{
     let isAlreadyMark = await certificationSchema.findOne({tubeId,learnerId})
@@ -133,7 +133,16 @@ try{
             youtuberName,
             youtuberChannelName,
             scoredAtQuiz:quizScore,
-            scoredOnAiEvaluationAtProject:aiScore
+            scoredOnAiEvaluationAtProject:aiScore,
+            git_fullName,
+            git_name,
+            git_url,
+            git_description,
+            git_language,
+            git_stars,
+            git_forks,
+            git_pushed_at,
+           git_visibility
         })
         let dt = await certScehma.save()
         res.status(200).send(dt)
@@ -161,6 +170,22 @@ try{
     res.status(400).send({message:"internal issue",err})
 }
 })
+
+router.get('/getCertificate/:learnerId/:tubeId',async(req,res)=>{
+    console.log("triggered")
+    try{
+        let {learnerId,tubeId} = req.params
+        if(!learnerId || !tubeId){
+            res.status(400).send({message:"insufficient body data"})
+        }else{
+            let dt = await certificationSchema.findOne({learnerId,tubeId})
+            res.status(200).send(dt)
+        }
+    }catch(err){
+        console.log(err)
+        res.status(400).send({message:"internal issue",err})
+    }
+    })
  
  
 module.exports = router

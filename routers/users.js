@@ -157,7 +157,7 @@ if(!req.body.oauthToken || !req.body.id){
    try{
     let isLearner = await usersSchema.findOne({_id:req.body.id});
     if(isLearner){
-        res.status(200).send({userStatus:"good"})
+        res.status(200).send({userStatus:"good",name:isLearner.fullName})
     }else{
         res.status(400).send({message:"account not created yet"})
     }

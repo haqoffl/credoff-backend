@@ -50,6 +50,40 @@ required:true
         type:Number,
         default:15
     },
+    git_fullName:{
+        type:String,
+        required:true
+    },
+ 
+    git_name:{
+            type:String,
+            required:true
+    },
+    git_url:{
+        type:String,
+        required:true
+    },
+    git_description:{
+        type:String,
+    },
+    git_language:{
+        type:String,
+        required:true
+    },
+    git_stars:{
+        type:Number
+    },
+    git_forks:{
+        type:Number
+    },
+    git_pushed_at:{
+        type:Date,
+        required:true
+    },
+    git_visibility:{
+        type:String,
+        required:true
+    },
     isMinted:{
         type:Boolean,
         default:false
