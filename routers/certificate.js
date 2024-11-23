@@ -179,7 +179,11 @@ router.get('/getCertificate/:learnerId/:tubeId',async(req,res)=>{
             res.status(400).send({message:"insufficient body data"})
         }else{
             let dt = await certificationSchema.findOne({learnerId,tubeId})
-            res.status(200).send(dt)
+            if(dt){
+                res.status(200).send(dt)
+            }else{
+                res.status(400).send({message:"certificate not found"})
+            }
         }
     }catch(err){
         console.log(err)

@@ -2,6 +2,7 @@ var express = require('express')
 var crypto = require('crypto')
 const certificationSchema = require('../schema/certificationSchema')
 const learnerDetailSchema = require('../schema/learnerDetailSchema')
+const tubesSchema = require('../schema/tubesSchema')
 var router = express.Router()
 
 router.post('/',async(req,res)=>{
@@ -23,6 +24,11 @@ router.post('/',async(req,res)=>{
         return res.status(400).send({ message: 'Invalid signature' });
     }else{
         let dt = await certificationSchema.updateOne({learnerId:learnerId,tubeId:tubeId},{$set:{isMinted:true,issuedDate:issuedDate}})
+        let perCertificatePrice = 199
+        let  commisionPercentagePerCertificate = 30
+        let commissionForYoutuberPerCertificate = perCertificatePrice*(commisionPercentagePerCertificate/100)
+        await tubesSchema.updateOne({_id:tubeId},{$inc:{issued_certificate:1,earned_amount:commissionForYoutuberPerCertificate}})
+    
         let isLearnerDataExisit = await learnerDetailSchema.findOne({learnerId:learnerId})
         if(!isLearnerDataExisit){
             let learnerData =  new learnerDetailSchema({
@@ -31,7 +37,7 @@ router.post('/',async(req,res)=>{
                 email:entity.notes.email
         })
         await learnerData.save()
-    
+      
         }
         res.status(200).send({message:"certificate generated successfully!",dt})
     }

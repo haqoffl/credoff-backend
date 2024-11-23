@@ -48,7 +48,7 @@ if(!fullName||!channelName||!channelURL||!language||!oauthToken){
             res.status(400).send({message:"something went wrong"})
         }
         }else{
-            res.status(200).send("account already created!")
+            res.status(201).send("account already created!.. please login")
         }
     })
     .catch(error => {
@@ -87,7 +87,7 @@ if(!fullName||!dateOfBirth||!role||!oauthToken){
             res.status(400).send({message:"something went wrong"})
         }
         }else{
-            res.status(200).send("account already created!")
+            res.status(201).send("account already created!.. please login")
         }
     })
     .catch(error => {
@@ -109,13 +109,13 @@ router.post('/loginToCredoff/learner',async(req,res)=>{
     }).then(async(response)=>{
         let isLearner = await usersSchema.findOne({github_id:response.data.id});
         if(isLearner){
-            res.status(200).send({learnerId:isLearner._id,name:isLearner.fullName,github_id:isLearner.github_id,github_node_id:isLearner.github_node_id})
+            res.status(200).send({github_username:response.data.login,learnerId:isLearner._id,name:isLearner.fullName,github_id:isLearner.github_id,github_node_id:isLearner.github_node_id})
         }else{
             res.status(400).send({message:"account not created yet"})
         }
 
     }).catch(err=>{
-        res.status(400).send({message:"internal server issue"})
+        res.status(500).send({message:"internal server issue"})
     })
 })
 router.post('/loginToCredoff/youtuber',async(req,res)=>{
@@ -127,7 +127,7 @@ router.post('/loginToCredoff/youtuber',async(req,res)=>{
         let isYoutuber = await youtuberSchema.findOne({github_id:response.data.id});
     
         if(isYoutuber){
-            res.status(200).send({youtuberId:isYoutuber._id,name:isYoutuber.fullName,github_id:isYoutuber.github_id,github_node_id:isYoutuber.github_node_id,channelName:isYoutuber.youtubeChannelName,language:isYoutuber.language})
+            res.status(200).send({github_username:response.data.login,youtuberId:isYoutuber._id,name:isYoutuber.fullName,github_id:isYoutuber.github_id,github_node_id:isYoutuber.github_node_id,channelName:isYoutuber.youtubeChannelName,language:isYoutuber.language})
         }else{
             res.status(400).send({message:"account not created yet!"})
         }
