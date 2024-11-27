@@ -25,7 +25,7 @@ router.post('/',async(req,res)=>{
     }else{
         let dt = await certificationSchema.updateOne({learnerId:learnerId,tubeId:tubeId},{$set:{isMinted:true,issuedDate:issuedDate}})
         let perCertificatePrice = 199
-        let  commisionPercentagePerCertificate = 30
+        let  commisionPercentagePerCertificate = 50
         let commissionForYoutuberPerCertificate = perCertificatePrice*(commisionPercentagePerCertificate/100)
         await tubesSchema.updateOne({_id:tubeId},{$inc:{issued_certificate:1,earned_amount:commissionForYoutuberPerCertificate}})
     

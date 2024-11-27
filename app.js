@@ -24,6 +24,8 @@ app.use('/payments',payments)
 
 
 app.get('/thumbnail/:id',async(req,res)=>{
+    let connection = mongoose.createConnection(process.env.MONGO_URI);
+
     let gfs =    Grid(connection,mongoose.mongo);
     let collection = gfs.collection('Thumbnails');
     let result = await collection.findOne({filename:req.params.id})
@@ -55,19 +57,25 @@ app.listen(port,()=>{
 })
 
 //connecting with mongodb
-let connectToMongo = async()=>{
-    try{
-        mongoose.set("strictQuery",false)
-        mongoose.connect(process.env.MONGO_URI)
-        console.log('Mongo connected')
-    
-    }catch(err){
-    console.log(err)
-    }
-    }
-    let conn = connectToMongo()
 
-    let connection = mongoose.createConnection(process.env.MONGO_URI);
+const connectToMongo = async () => {
+    try {
+        mongoose.set("strictQuery", false); // Disable strict query for backward compatibility
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true, // Recommended for compatibility
+            useUnifiedTopology: true, // Recommended for new topology engine
+            maxPoolSize: 50 // Set the connection pool size to 50
+        });
+        console.log('MongoDB connected successfully');
+    } catch (err) {
+        console.error('Error connecting to MongoDB:', err.message);
+        process.exit(1); // Exit the process on a failure to connect
+    }
+};
+
+connectToMongo();
+
+
 
 
     //id: 91720352
