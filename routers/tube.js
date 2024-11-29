@@ -18,11 +18,11 @@ router.get('/',(req,res)=>{
 
 
 router.post('/createTube',upload.single("image"),async(req,res)=>{
-    let {title,desc,tags,terms,conditions,programming_language,id} = JSON.parse(req.body.data)
+    let {title,desc,tags,terms,conditions,programming_language,id,certificateType} = JSON.parse(req.body.data)
     console.log(JSON.parse(req.body.data))
 
     try{
-        if(!title||!desc||!tags||!terms||!conditions||!programming_language){
+        if(!title||!desc||!tags||!terms||!conditions||!programming_language || !certificateType){
             res.status(400).send({
                 message:"bad request"
             })
@@ -35,6 +35,7 @@ router.post('/createTube',upload.single("image"),async(req,res)=>{
                 terms,
                 conditions,
                 programming_language,
+                isPayedCertificate:certificateType.toLowerCase() ==="paid"?true:false,
                 ownedBy:id
             })
             let data = await tube.save()

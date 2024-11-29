@@ -52,5 +52,17 @@ router.post('/',async(req,res)=>{
    }
 })
 
-
+router.post("/free",async(req,res)=>{
+    let {learnerId,tubeId} = req.body
+   if(!learnerId || !tubeId){
+    res.status(400).send({message:"insufficient body data"})
+   }else{
+    try{
+        let dt = await certificationSchema.updateOne({learnerId:learnerId,tubeId:tubeId},{$set:{isMinted:true,issuedDate:Date.now()}})
+        res.status(200).send({message:"certificate generated successfully!",dt})
+   }catch(err){
+    res.status(400).send({err,message:"internal server issue,try again later"})
+   }
+   }
+})
 module.exports = router

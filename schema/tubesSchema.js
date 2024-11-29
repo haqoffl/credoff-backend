@@ -41,6 +41,11 @@ required:true
         type:String,
         required:true
     },
+    isPayedCertificate:{
+        type:Boolean,
+        default:false,
+        required:true
+    },
     earned_amount:{
         type:Number,
         default:0

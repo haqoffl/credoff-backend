@@ -25,7 +25,9 @@ var certificationSchema = new mongoose.Schema({
         type:String,
         required:true
     },
- 
+    isPayedCertificate:{
+        type:Boolean,
+    },
     youtuberName:{
         type:String,
         required:true
@@ -73,6 +75,7 @@ required:true
     git_stars:{
         type:Number
     },
+    
     git_forks:{
         type:Number
     },

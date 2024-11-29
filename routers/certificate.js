@@ -118,7 +118,7 @@ router.post('/projectValidation',async(req,res)=>{
 
 
 router.post('/MarkEvaluationComplete',async(req,res)=>{
-let {tubeId,tubeName,thumbnail,learnerId,learnerName,language,youtuberName,youtuberChannelName,quizScore,aiScore,git_fullName,git_name,git_url, git_description,git_language,git_stars,git_forks,git_pushed_at,git_visibility} = req.body
+let {tubeId,tubeName,thumbnail,learnerId,isPayedCertificate,learnerName,language,youtuberName,youtuberChannelName,quizScore,aiScore,git_fullName,git_name,git_url, git_description,git_language,git_stars,git_forks,git_pushed_at,git_visibility} = req.body
 
 try{
     let isAlreadyMark = await certificationSchema.findOne({tubeId,learnerId})
@@ -129,6 +129,7 @@ try{
             thumbnail,
             learnerId,
             learnerName,
+            isPayedCertificate,
             language,
             youtuberName,
             youtuberChannelName,
