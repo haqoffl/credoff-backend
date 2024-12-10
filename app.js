@@ -12,14 +12,18 @@ var tube = require('./routers/tube')
 var certificate = require('./routers/certificate')
 var users = require('./routers/users')
 var payments = require('./routers/payments')
+var dailylog = require('./routers/dailylog')
 //use
 app.use(cors())
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(morgan('dev'))
 app.use('/users',users)
 app.use("/tube",tube)
 app.use('/certificate',certificate)
 app.use('/payments',payments)
+app.use('/dailylog',dailylog)
 // endpoint
 
 

@@ -5,16 +5,6 @@ var dailylogSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         required:true
     },
-    github_id:{
-        type:Number,
-        required:true,
-        unique:true
-    },
-    github_node_id:{
-        type:String,
-        required:true,
-        unique:true
-    },
     date:{
         type:Date,
         required:true
@@ -27,9 +17,6 @@ var dailylogSchema = new mongoose.Schema({
         type:String,
         
     },
-    video:{
-        type:String,   
-    },
     fires:{
         type:Number,
         default:0
@@ -37,4 +24,4 @@ var dailylogSchema = new mongoose.Schema({
 }
 )
 
-module.exports = mongoose.model("DailylogSchema",dailylogSchema)
+module.exports = mongoose.model("dailylogSchema",dailylogSchema)
